@@ -68,7 +68,19 @@ public class BoardEntity extends BaseEntity{
         boardEntity.setBoardTitle(boardDTO.getBoardTitle());
         boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setBoardHits(0);
-        boardEntity.setFileAttached(1); // 파일이 없음.
+
+
+
+
+
+
+        if (boardDTO.getBoardFile() == null || boardDTO.getBoardFile().isEmpty()) {
+            boardEntity.setFileAttached(0); // 파일 첨부 안 됨
+        } else {
+            boolean isFileAttached = boardDTO.getBoardFile().stream().anyMatch(file -> file != null && !file.isEmpty());
+            boardEntity.setFileAttached(isFileAttached ? 1 : 0); // 파일 첨부 여부 설정
+        }
+
         return boardEntity;
     }
 }
