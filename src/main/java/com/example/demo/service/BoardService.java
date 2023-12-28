@@ -2,6 +2,8 @@ package com.example.demo.service;
 
 import com.example.demo.dto.BoardDTO;
 import com.example.demo.entity.BoardEntity;
+import com.example.demo.entity.BoardFileEntity;
+import com.example.demo.repository.BoardFileRepository;
 import com.example.demo.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final BoardFileRepository boardFileRepository;
 
     public void save(BoardDTO bOardDTO) throws IOException {
         //파일 첨부 여부에 따라 로직 분리
@@ -48,12 +51,19 @@ public class BoardService {
             String storedFileName = System.currentTimeMillis() + "_" + originalFileName; //3
             String savePath = "C:/springboot_img/" + storedFileName; //4 C:/springboot_img/388392_내사진.jpg
             boardFile.transferTo(new File(savePath));  //5
+            BoardEntity boardEntity = BoardEntity.toSaveFileEntity(bOardDTO);
+            Long saveId = boardRepository.save(boardEntity).getId();
+            BoardEntity board = boardRepository.findById(saveId).get();
+
+            BoardFileEntity boardFileEntity = BoardFileEntity.toBoardFileEntity(board, originalFileName, storedFileName);
+            boardFileRepository.save(boardFileEntity); // DB에 저장까지 한것
 
 
         }
 
     }
 
+    @Transactional
     public List<BoardDTO> findAll() {
         List<BoardEntity> boardEntityList = boardRepository.findAll();
         List<BoardDTO> boardDTOList = new ArrayList<>();
@@ -68,6 +78,7 @@ public class BoardService {
         boardRepository.updateHits(id);
     }
 
+    @Transactional
     public BoardDTO findById(Long id) {
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(id);
         if (optionalBoardEntity.isPresent()) {
