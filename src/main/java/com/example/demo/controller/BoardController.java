@@ -2,7 +2,9 @@ package com.example.demo.controller;
 
 
 import com.example.demo.dto.BoardDTO;
+import com.example.demo.dto.CommentDto;
 import com.example.demo.service.BoardService;
+import com.example.demo.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Page;
@@ -21,6 +23,7 @@ import java.util.List;
 @RequestMapping("/board")
 public class BoardController {
     private final BoardService boardService;
+    private final CommentService commentService;
 
     @GetMapping("/save")
     public String saveForm() {
@@ -50,6 +53,8 @@ public class BoardController {
          */
         boardService.updateHits(id);
         BoardDTO boardDTO = boardService.findById(id);
+        List<CommentDto> commentDtoList = commentService.findAll(id);
+        model.addAttribute("commentDtoList", commentDtoList);
         model.addAttribute("board", boardDTO);
         model.addAttribute("page", pageable.getPageNumber());
         return "detail";
