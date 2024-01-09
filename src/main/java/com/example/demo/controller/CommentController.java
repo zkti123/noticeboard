@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/comment")
 public class CommentController {
 private final CommentService commentService;
-    @PostMapping
+    @PostMapping("/save")
     public ResponseEntity save(@ModelAttribute CommentDto commentDto) {
         System.out.println("commentDto" + commentDto);
         Long saveResult = commentService.save(commentDto);
