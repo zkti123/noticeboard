@@ -20,6 +20,9 @@ public class CommentEntity {
     @Column
     private String commentContents;
 
+    /*
+    Board: comment = 1:N
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private BoardEntity boardEntity;

@@ -19,7 +19,8 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
     public Long save(CommentDto commentDto) {
-        Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(commentDto.getId());
+        /* 부모엔티티(BoardEntity) 조회 */
+        Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(commentDto.getBoardId());
         if (optionalBoardEntity.isPresent()) {
             BoardEntity boardEntity = optionalBoardEntity.get();
             CommentEntity commentEntity = CommentEntity.toSaveEntity(commentDto, boardEntity);
@@ -30,15 +31,14 @@ public class CommentService {
     }
 
     public List<CommentDto> findAll(Long boardId) {
-        // select * from comment_table where board_id=? order by id desc;
         BoardEntity boardEntity = boardRepository.findById(boardId).get();
         List<CommentEntity> commentEntityList = commentRepository.findAllByBoardEntityOrderByIdDesc(boardEntity);
-        /*EntityList -> DTOList*/
-        List<CommentDto> commentDtoList = new ArrayList<>();
-        for (CommentEntity commentEntity : commentEntityList) {
-            CommentDto commentDto = CommentDto.toCommentDTO(commentEntity,boardId);
-            commentDtoList.add(commentDto);
+        /* EntityList -> DTOList */
+        List<CommentDto> commentDTOList = new ArrayList<>();
+        for (CommentEntity commentEntity: commentEntityList) {
+            CommentDto commentDTO = CommentDto.toCommentDTO(commentEntity, boardId);
+            commentDTOList.add(commentDTO);
         }
-        return commentDtoList;
+        return commentDTOList;
     }
 }
